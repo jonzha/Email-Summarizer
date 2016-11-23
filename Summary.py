@@ -5,6 +5,16 @@ import nltk
 from nltk import tokenize
 from nltk.corpus import stopwords
 
+class Simple_Sentence:
+    text = ""
+    def __init__(self, text):
+        self.text = text
+    def get_len(self):
+        return len(self.text)
+    def get_parameters(self):
+        return [self.get_len()]
+
+
 class Sentence:
     text = ""
     score = 0
@@ -142,12 +152,12 @@ text = text.decode('utf-8')
 #      word = porter.stem(word)
 #      print "\n"
 # text = ' '.join(words)
-
-textModified = normalize(text)
-# textModified = removeStops(text)
-textModified = textModified.lower();
-print textModified
-result = getBestSentences(text, textModified, 2)
-
-
-print result
+#
+# textModified = normalize(text)
+# # textModified = removeStops(text)
+# textModified = textModified.lower();
+# print textModified
+# result = getBestSentences(text, textModified, 2)
+#
+#
+# print result
