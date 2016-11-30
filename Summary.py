@@ -5,42 +5,34 @@ import nltk
 from nltk import tokenize
 from nltk.corpus import stopwords
 
-class Simple_Sentence:
-    text = ""
+
+# Text is an object that represents a piece of text to be sumamrized. It contains a list of Simple_Sentences as well as
+# a sentences_dic which holds the intersection score for each sentences.
+class Text:
+    sentences = []
+    sentences_dic = []
     def __init__(self, text):
         self.text = text
-    def get_len(self):
-        return len(self.text)
-    def get_parameters(self):
-        return [self.get_len()]
+        self.sentences = split_content_to_sentences(text)
+        self.sentences_dic = createMatrix(text)
+        for i in xrange(len(self.sentences)):
+            self.sentences[i] = Simple_Sentence(self.sentences[i], self.sentences_dic[self.sentences[i]], i)
 
 
-class Sentence:
-    text = ""
-    score = 0
-    length = 0
-    lengthW = 0
-    position = 0
-    positionW = 0
-    subjectSimilarity = 0
-    subjectSimilarityW = 0
-    keywordSimilarity = 0
-    keywordSimilarityW = 0
-    intersection = 0
-    intersectionW = 0
-    def _init_(self,text,  position, subjectSimilarity, keywordSimilarity, intersection):
+# Simple_Sentence is an object that represents a sentence
+class Simple_Sentence:
+    # Text is the text, intersection is the intersection score from the sentences_dic and index is the index in which
+    # the sentence appears in the original text
+    def __init__(self, text, intersection, index):
         self.text = text
-        self.length = len(set(sent1.split(" ")))
-        self.position = position
         self.intersection = intersection
-        self.subjectSimilarity = subjectSimilarity
-        self.keywordSimilarity = keywordSimilarity
-        self.intersection = intersection
+        self.index = index
+        self.num_words = len(self.text.split(" "))
+        self.len = len(self.text)
 
-    def calculateScore(self):
-        self.score = self.length * self.lengthW + self.position * self.positionW + self.subjectSimilarity * self.subjectSimilarityW + self.keywordSimilarity * self.keywordSimilarityW + self.intersection * self.intersectionW
-
-
+    # Returns a list of parameters
+    def get_parameters(self):
+        return [self.len, self.num_words, self.intersection, self.index]
 
 
 def sentences_intersection(sent1, sent2):
