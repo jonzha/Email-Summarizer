@@ -5,35 +5,82 @@ import nltk
 from nltk import tokenize
 from nltk.corpus import stopwords
 
-
 # Text is an object that represents a piece of text to be sumamrized. It contains a list of Simple_Sentences as well as
 # a sentences_dic which holds the intersection score for each sentences.
 class Text:
     sentences = []
     sentences_dic = []
-    def __init__(self, text):
+    def __init__(self, text, title):
         self.text = text
         self.sentences = split_content_to_sentences(text)
         self.sentences_dic = createMatrix(text)
+        
+        # For relative length
+        avg_length = 0
         for i in xrange(len(self.sentences)):
-            self.sentences[i] = Simple_Sentence(self.sentences[i], self.sentences_dic[self.sentences[i]], i)
+            avg_length += len(self.sentences[i])
+        
+        avg_length = float(avg_length) / len(self.sentences)
+
+        for i in xrange(len(self.sentences)):
+            self.sentences[i] = Simple_Sentence(self.sentences[i], self.sentences_dic[self.sentences[i]], i, avg_length, title)
 
 
 # Simple_Sentence is an object that represents a sentence
 class Simple_Sentence:
     # Text is the text, intersection is the intersection score from the sentences_dic and index is the index in which
     # the sentence appears in the original text
-    def __init__(self, text, intersection, index):
+    def __init__(self, text, intersection, index, avg_length, title):
         self.text = text
         self.intersection = intersection
         self.index = index
-        self.num_words = len(self.text.split(" "))
+        self.words = self.text.split(" ")
+        self.num_words = len(self.words)
         self.len = len(self.text)
+        self.relative_length = self.len / avg_length
+
+        # Assumption: any words that start with capital letters are 'named entities' and are thus important
+        # named_entities is proportion of words that start with capital letter
+        named_entities = 0
+        word_frequencies = {}
+        title_words = title.split(" ")
+        number_count = 0
+        title_similarity = 0
+        
+        for word in self.words:
+            if len(word) == 0:
+                continue
+            if word[0].isupper():
+                named_entities += 1
+
+            if word in word_frequencies:
+                word_frequencies[word] += 1
+            else:
+                word_frequencies[0] = 0
+
+            for title_word in title_words:
+                if word == title_word:
+                    title_similarity += 1
+            
+            if any(char.isdigit() for char in word):
+                number_count += 1
+        
+        avg_word_frequency = 0
+        for item in word_frequencies:
+            avg_word_frequency += word_frequencies[item]
+        
+        self.average_tf       = float(avg_word_frequency) / len(word_frequencies)
+        self.named_entities   = float(named_entities)
+        self.title_similarity = float(title_similarity)   / len(title_words)
+        self.number_count     = float(number_count)       / self.num_words
 
     # Returns a list of parameters
     def get_parameters(self):
-        return [self.len, self.num_words, self.intersection, self.index]
+        return [self.len, self.num_words, self.intersection, self.index, self.relative_length, 
+        self.named_entities, self.average_tf, self.title_similarity, self.number_count]
 
+    def get_length(self):
+        return self.len
 
 def sentences_intersection(sent1, sent2):
     # split the sentence into words/tokens
@@ -74,7 +121,7 @@ def createMatrix(text):
     values = [[0 for x in xrange(n)] for x in xrange(n)]
     for i in range(0, n):
         for j in range(0, n):
-            values[i][j] = sentences_intersection(sentences[i], sentences[j]);
+            values[i][j] = sentences_intersection(sentences[i], sentences[j])
 
     sentences_dic = {}
     for i in range(0, n):

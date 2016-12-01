@@ -38,7 +38,7 @@ def fitness(individual, target):
 
 def pop_fitness(population, target):
     summed = reduce(add, (fitness(x, target) for x in population), 0)
-    return summed / (len(population) * 1.0)
+    return summed / float(population)
 
 def evolve(population, target, retain=0.2, random_select=0.05, mutate=0.01):
 
@@ -81,4 +81,3 @@ def euclidean(a, b):
     for i in range(0, len(a)):
         distance += math.pow(a[i] - b[i], 2)
     return math.sqrt(distance)
-
