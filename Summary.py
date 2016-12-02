@@ -4,7 +4,7 @@ import re
 import nltk
 from nltk import tokenize
 from nltk.corpus import stopwords
-
+import numpy
 
 # Text is an object that represents a piece of text to be sumamrized. It contains a list of Simple_Sentences as well as
 # a sentences_dic which holds the intersection score for each sentences.
@@ -79,8 +79,10 @@ class Simple_Sentence:
 
     # Returns a list of parameters
     def get_parameters(self):
-        return [self.len, self.num_words, self.intersection, self.index, self.relative_length,
-                self.named_entities, self.average_tf, self.title_similarity, self.number_count]
+        return numpy.array([self.len, self.num_words, self.intersection, self.index, self.relative_length,
+                self.named_entities, self.average_tf, self.title_similarity, self.number_count])
+        # return [self.len, self.num_words, self.intersection, self.index, self.relative_length,
+        #         self.named_entities, self.average_tf, self.title_similarity, self.number_count]
 
     def get_length(self):
         return self.len
