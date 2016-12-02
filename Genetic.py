@@ -26,7 +26,7 @@ class Individual:
 
 # creates an individual object
 def make_individual():
-    return Individual([random.uniform(-1, 1) for i in range(0, 4)])
+    return Individual([random.uniform(-1, 1) for i in range(0, 8)])
 
 # Creates a population of size count
 def population(count):
@@ -38,9 +38,9 @@ def fitness(individual, target):
 
 def pop_fitness(population, target):
     summed = reduce(add, (fitness(x, target) for x in population), 0)
-    return summed / float(population)
+    return summed / (len(population) * 1.0)
 
-def evolve(population, target, retain=0.2, random_select=0.05, mutate=0.01):
+def evolve(population, target, retain=0.1, random_select=0.05, mutate=0.01):
 
     # Generate the parents
     graded = [ (fitness(x, target), x) for x in population]
@@ -81,3 +81,4 @@ def euclidean(a, b):
     for i in range(0, len(a)):
         distance += math.pow(a[i] - b[i], 2)
     return math.sqrt(distance)
+

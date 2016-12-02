@@ -5,25 +5,28 @@ import nltk
 from nltk import tokenize
 from nltk.corpus import stopwords
 
+
 # Text is an object that represents a piece of text to be sumamrized. It contains a list of Simple_Sentences as well as
 # a sentences_dic which holds the intersection score for each sentences.
 class Text:
     sentences = []
     sentences_dic = []
+
     def __init__(self, text, title):
         self.text = text
         self.sentences = split_content_to_sentences(text)
         self.sentences_dic = createMatrix(text)
-        
+
         # For relative length
         avg_length = 0
         for i in xrange(len(self.sentences)):
             avg_length += len(self.sentences[i])
-        
+
         avg_length = float(avg_length) / len(self.sentences)
 
         for i in xrange(len(self.sentences)):
-            self.sentences[i] = Simple_Sentence(self.sentences[i], self.sentences_dic[self.sentences[i]], i, avg_length, title)
+            self.sentences[i] = Simple_Sentence(self.sentences[i], self.sentences_dic[self.sentences[i]], i, avg_length,
+                                                title)
 
 
 # Simple_Sentence is an object that represents a sentence
@@ -46,7 +49,7 @@ class Simple_Sentence:
         title_words = title.split(" ")
         number_count = 0
         title_similarity = 0
-        
+
         for word in self.words:
             if len(word) == 0:
                 continue
@@ -61,26 +64,27 @@ class Simple_Sentence:
             for title_word in title_words:
                 if word == title_word:
                     title_similarity += 1
-            
+
             if any(char.isdigit() for char in word):
                 number_count += 1
-        
+
         avg_word_frequency = 0
         for item in word_frequencies:
             avg_word_frequency += word_frequencies[item]
-        
-        self.average_tf       = float(avg_word_frequency) / len(word_frequencies)
-        self.named_entities   = float(named_entities)
-        self.title_similarity = float(title_similarity)   / len(title_words)
-        self.number_count     = float(number_count)       / self.num_words
+
+        self.average_tf = float(avg_word_frequency) / len(word_frequencies)
+        self.named_entities = float(named_entities)
+        self.title_similarity = float(title_similarity) / len(title_words)
+        self.number_count = float(number_count) / self.num_words
 
     # Returns a list of parameters
     def get_parameters(self):
-        return [self.len, self.num_words, self.intersection, self.index, self.relative_length, 
-        self.named_entities, self.average_tf, self.title_similarity, self.number_count]
+        return [self.len, self.num_words, self.intersection, self.index, self.relative_length,
+                self.named_entities, self.average_tf, self.title_similarity, self.number_count]
 
     def get_length(self):
         return self.len
+
 
 def sentences_intersection(sent1, sent2):
     # split the sentence into words/tokens
@@ -99,11 +103,13 @@ def sentences_intersection(sent1, sent2):
 
     # Naive method for splitting a text into sentences
 
+
 def split_content_to_sentences(content):
     return tokenize.sent_tokenize(content)
     #
     # content = content.replace("\n", ". ")
     # return content.split(". ")
+
 
 # Naive method for splitting a text into paragraphs
 def split_content_to_paragraphs(content):
@@ -111,9 +117,11 @@ def split_content_to_paragraphs(content):
     # Format a sentence - remove all non-alphbetic chars from the sentence
     #  We'll use the formatted sentence as a key in our sentences dictionary
 
+
 def format_sentence(self, sentence):
     sentence = re.sub(r'\W+', '', sentence)
     return sentence
+
 
 def createMatrix(text):
     sentences = split_content_to_sentences(text)
@@ -132,6 +140,7 @@ def createMatrix(text):
             sum += values[i][j]
         sentences_dic[sentences[i]] = sum
     return sentences_dic
+
 
 def getBestSentences(originalText, text, num_sentences):
     original = split_content_to_sentences(originalText)
@@ -154,13 +163,15 @@ def getBestSentences(originalText, text, num_sentences):
         finalSummary += " " + curr_best
     return finalSummary
 
-def normalize (text):
+
+def normalize(text):
     words = text.split(" ")
     for i, item in enumerate(words):
         words[i] = porter.stem(words[i])
     return ' '.join(words)
 
-def removeStops (text):
+
+def removeStops(text):
     words = text.split(" ")
     cachedStopWords = stopwords.words("english")
     return ' '.join([word for word in text.split() if word not in cachedStopWords])
@@ -179,7 +190,7 @@ text = "In this day and age, everyone is barraged with a plethora of emails. Pri
 text = text.replace("\xc2\xa0", " ")
 text = text.decode('utf-8')
 # Preprocessing stuff
-#text = normalize(text.decode('utf-8'))
+# text = normalize(text.decode('utf-8'))
 # [wnl.lemmatize(t) for t in sent1]
 # words = text.split(" ")
 # cachedStopWords = stopwords.words("english")
