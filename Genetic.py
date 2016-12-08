@@ -10,6 +10,7 @@ class Individual:
 
     def __init__(self, weights):
         self.weights = weights
+        self.rankings = []
 
     def to_string(self):
         return self.weights
@@ -21,13 +22,15 @@ class Individual:
         return numpy.dot(self.weights, parameters)
         # return sum([a * b for a, b in zip(self.weights, parameters)])
 
-    # Takes in text, which is a list of sentences
-    def calculate_rankings(self, text):
-        score_list = []
-        for i in range(0, len(text)):
-            curr_sent = text[i]
-            score_list.append( self.calculate_score(text[i].get_parameters()))
-        self.rankings = [i[0] for i in sorted(enumerate(score_list), key=lambda x: x[1])]
+    # Takes in texts, which is a list of list of sentences
+    def calculate_rankings(self, texts):
+        self.rankings = []
+        for text in texts:
+            score_list = []
+            for i in range(0, len(text)):
+                curr_sent = text[i]
+                score_list.append( self.calculate_score(text[i].get_parameters()))
+            self.rankings.append([i[0] for i in sorted(enumerate(score_list), key=lambda x: x[1])])
 
 # creates an individual object
 def make_individual():
@@ -38,9 +41,12 @@ def make_individual():
 def population(count):
     return [ make_individual() for x in xrange(count) ]
 
-# Takes in an individual and calculates its fitness based off a target set of rankings
+# Takes in an individual and calculates its fitness based off average of multiple target sets of rankings
 def fitness(individual, target):
-    return euclidean(individual.get_rankings(), target)
+    curr_sum = 0
+    for i in range(0, len(target)):
+        curr_sum += euclidean(individual.get_rankings()[i], target[i])
+    return curr_sum / len(target)
 
 def pop_fitness(population, target):
     summed = reduce(add, (fitness(x, target) for x in population), 0)

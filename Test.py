@@ -8,10 +8,17 @@ text = "In this day and age, everyone is barraged with a plethora of emails. Pri
 text = text.replace("\xc2\xa0", " ")
 text = text.decode('utf-8')
 text = s.Text(text, "Email Summarizer")
-sentences = text.sentences
-
-# sentences = [s.Simple_Sentence("hello there"), s.Simple_Sentence("am"), s.Simple_Sentence("A big boy now")]
 target = numpy.array([5, 12, 6, 14, 0, 2, 1, 3, 4, 7, 8, 9, 10, 11, 13])
+text_sentences = text.sentences
+
+text2 = "Some days I wish I was 9. Other days I just hate the world. But alas this is life."
+text2 = s.Text(text2, "world")
+target2 = numpy.array([2, 0, 1])
+text2_sentences = text2.sentences
+
+sentences_list = [text_sentences, text2_sentences]
+# sentences = [s.Simple_Sentence("hello there"), s.Simple_Sentence("am"), s.Simple_Sentence("A big boy now")]
+target = [target, target2]
 
 pop = g.population(800)
 # fitness_history = [g.pop_fitness(pop, target)]
@@ -20,8 +27,9 @@ best_individual = "blah"
 no_change_count = 0
 generation = 0
 # for i in xrange(200):
+
 for j in pop:
-    j.calculate_rankings(sentences)
+    j.calculate_rankings(sentences_list)
 while no_change_count < 200:
     #
 
@@ -31,7 +39,7 @@ while no_change_count < 200:
     #     print "----"
     pop = g.evolve(pop, target)
     for j in pop:
-        j.calculate_rankings(sentences)
+        j.calculate_rankings(sentences_list)
     fitness = g.pop_fitness(pop,target)
     # fitness_history.append(fitness)
     if fitness < best_fitness:
@@ -56,4 +64,3 @@ print g.fitness(best_individual, target)
 print "---"
 # for datum in fitness_history:
 #    print datum
-
